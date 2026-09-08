@@ -20,6 +20,7 @@ jobs:
     - name : Run Trivy Vulnerability Scan
       uses : aquasecurity/trivy-action@master
       with : 
+        scan-type : 'image'
         img-ref : 'devsecops-api:${{github.sha}}'
         format : 'table'
         exit-code : '1'
