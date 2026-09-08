@@ -1,0 +1,28 @@
+name : DevSecOps CI PipeLine
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-scan:
+    runs-on : ubuntu-latest 
+
+    steps:
+    - name : Checkout code 
+      uses : actions/checkout@v4
+
+    - name : Build Container Image 
+      run : docker build -t devsecops-api:${{github.sha}} .
+    
+    - name : Run Trivy Vulnerability Scan
+      uses : aquasecurity/trivy-action@master
+      with : 
+        img-ref : 'devsecops-api:${{github.sha}}'
+        format : 'table'
+        exit-code : '1'
+        ignore-unfixed : true
+        vuln-type : 'os, library'
+        severity : 'CRITICAL, HIGH'
