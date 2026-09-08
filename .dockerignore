@@ -4,3 +4,12 @@ __pycache__/
 *.pyc
 
 git.sh
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
