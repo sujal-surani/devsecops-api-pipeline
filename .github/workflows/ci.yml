@@ -3,8 +3,10 @@ name : DevSecOps CI PipeLine
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+
+env:
+  AWS_REGION: "ap-south-1"
+  ECR_REPOSITORY : "devsecops-api"
 
 jobs:
   build-and-scan:
@@ -14,9 +16,27 @@ jobs:
     - name : Checkout code 
       uses : actions/checkout@v4
 
-    - name : Build Container Image 
-      run : docker build -t devsecops-api:${{github.sha}} .
-    
+    - name : Configure AWS Credentials
+      uses : aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id : ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key : ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region : ${{ env.AWS_REGION }}
+  
+    - name : Login to Amazon ECR
+      id : login-ecr
+      uses : aws-actions/amazon-ecr-login@v2
+     
+
+    - name : Build and Tag Image 
+      env : 
+        ECR_REGISTRY : ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+
+      run : |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG devsecops-api:${{ github.sha }}    
+
     - name : Run Trivy Vulnerability Scan
       uses : aquasecurity/trivy-action@master
       with : 
@@ -27,3 +47,9 @@ jobs:
         ignore-unfixed : true
         vuln-type : 'os,library'
         severity : 'CRITICAL,HIGH'
+
+    - name : Push Secure Image to Amazon ECR
+      env :
+        ECR_REGISTRY : ${{steps.login-ecr.outputs.registry}}
+        IMAGE_TAG : ${{ github.sha}}
+      run : docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
