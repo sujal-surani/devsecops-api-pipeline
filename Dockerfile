@@ -1,5 +1,9 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get upgrade -y && \
+    pip install --upgrade "jaraco.context>=6.1.0" "wheel>=0.46.2" && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN useradd -m myuser
 
 WORKDIR /app
