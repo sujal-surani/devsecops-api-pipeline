@@ -1,8 +1,6 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 
-RUN apt-get update && apt-get upgrade -y && \
-    pip install --upgrade "jaraco.context>=6.1.0" "wheel>=0.46.2" && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get upgrade -y 
 
 RUN useradd -m myuser
 
