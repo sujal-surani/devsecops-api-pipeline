@@ -1,0 +1,12 @@
+appVersion: v1
+kind: Service
+metadata:
+  name: devsecops-api-svc
+spec:
+  type: NodePort
+  selector:
+    app: devsecops-api
+  ports:
+  - port: 80
+    targetPort: 8000
+    nodePort : 30080
