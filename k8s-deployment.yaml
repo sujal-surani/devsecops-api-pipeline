@@ -1,4 +1,4 @@
-apiVersion : app/v1
+apiVersion : apps/v1
 kind: Deployment
 metadata:
   name: devsecops-api
@@ -13,7 +13,7 @@ spec:
         app: devsecops-api
     spec:
       imagePullSecrets:
-      -name : ecr-cred
+      - name : ecr-cred
       containers:
       - name: api
         image: 187157282695.dkr.ecr.ap-south-1.amazonaws.com/devsecops-api:f6d80a986fe7127971b5302379f8cccab999d3c5
